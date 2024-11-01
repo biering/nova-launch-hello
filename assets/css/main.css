@@ -1,0 +1,6 @@
+html,
+body {
+  background-color: #fff;
+  font-family: 'Inter', sans-serif;
+  overscroll-behavior-y: none;
+}
