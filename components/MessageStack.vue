@@ -21,10 +21,17 @@
 import useAirtable from '~~/composables/useAirtable'
 import type { GuestData } from '~~/types'
 
+interface Props {
+  simulate: boolean
+}
+
+const props = defineProps<Props>()
+
 const { downloadGuestlist } = useAirtable()
 const messages = ref<{ id: number; name: string }[]>([])
-const maxMessages = ref(5) // Adjust this value to set the number of displayed messages
-const useWebsocket = false
+const maxMessages = ref(5)
+const messageQueue = ref<string[]>([])
+let processingQueue = false
 const mockGuests = ref<string[]>([
   'John Doe',
   'Christian Piechnick',
@@ -90,59 +97,80 @@ function getOpacity(index: number) {
   }
 }
 
-onMounted(async () => {
-  websocket = new WebSocket('ws://172.31.10.215:8765')
+function receiveMessage(name: string, lifetime = 10000) {
+  const messageId = Date.now() + Math.random()
+  messages.value.unshift({
+    id: messageId,
+    name: name,
+  })
 
-  if (useWebsocket) {
+  setTimeout(() => {
+    const index = messages.value.findIndex((m) => m.id === messageId)
+    if (index !== -1) {
+      messages.value.splice(index, 1)
+    }
+  }, lifetime)
+
+  // If messages exceed maxMessages, remove the last message with a slight delay to allow the transition
+  if (messages.value.length > maxMessages.value) {
+    setTimeout(() => {
+      messages.value.pop()
+    }, 500)
+  }
+}
+
+async function processQueue() {
+  if (processingQueue) return
+  processingQueue = true
+
+  while (messageQueue.value.length > 0) {
+    const name = messageQueue.value.shift()!
+    receiveMessage(name)
+    // Wait for at least 300ms before processing the next message
+    await new Promise((resolve) => setTimeout(resolve, 300))
+  }
+
+  processingQueue = false
+}
+
+function simulateMessages() {
+  function sendRandomMessage() {
+    const randomGuest =
+      mockGuests.value[Math.floor(Math.random() * mockGuests.value.length)]
+    // Enqueue the message
+    messageQueue.value.push(randomGuest)
+    processQueue()
+
+    // Schedule the next message at a random interval between 0.5 and 5 seconds
+    const randomInterval = Math.floor(Math.random() * 4500) + 500
+    setTimeout(sendRandomMessage, randomInterval)
+  }
+  sendRandomMessage()
+}
+
+onMounted(async () => {
+  if (!props.simulate) {
+    websocket = new WebSocket('ws://172.31.10.215:8765')
     websocket.onmessage = (event) => {
       console.log(event)
       const id = event.data.trim()
       // Find guest by RFID
       const guest = guestlist.value.find((g) => g.RFID === id)
       if (guest) {
-        const messageId = Date.now() + Math.random()
-        messages.value.unshift({
-          id: messageId,
-          name: `${guest.firstname} ${guest.lastname}`,
-        })
-
-        if (messages.value.length > maxMessages.value) {
-          setTimeout(() => {
-            messages.value.pop()
-          }, 500)
-        }
+        messageQueue.value.push(`${guest.firstname} ${guest.lastname}`)
+        processQueue()
       } else {
         console.warn(`Guest with RFID ${id} not found.`)
       }
     }
   } else {
-    // Simulate adding a new message every X seconds
-    const interval = 2000 // Interval in milliseconds (e.g., 2000ms = 2 seconds)
-
-    setInterval(() => {
-      // Randomly select a guest from the mock data
-      const randomGuest =
-        mockGuests.value[Math.floor(Math.random() * mockGuests.value.length)]
-      const messageId = Date.now() + Math.random() // Unique ID for each message
-
-      // Add a new message to the beginning of the messages array
-      messages.value.unshift({ id: messageId, name: `${randomGuest}` })
-
-      // If messages exceed maxMessages, remove the last one
-      if (messages.value.length > maxMessages.value) {
-        // Remove the last message with a slight delay to allow the transition
-        setTimeout(() => {
-          messages.value.pop()
-        }, 500) // Delay matches the leave transition duration
-      }
-    }, interval)
+    // Simulate receiving messages at random intervals
+    simulateMessages()
   }
 })
 
 onBeforeUnmount(() => {
-  if (websocket) {
-    websocket.close()
-  }
+  websocket?.close()
 })
 </script>
 
@@ -177,5 +205,6 @@ onBeforeUnmount(() => {
 
 .message-leave-to {
   opacity: 0;
+  transform: translateY(-20);
 }
 </style>
