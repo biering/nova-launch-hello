@@ -4,12 +4,14 @@
       name="message"
       tag="div"
       class="message-container space-y-6"
+      @after-leave="removeMessage"
     >
       <div
-        v-for="(message, index) in messages"
+        v-for="(message, index) in messages.filter((m) => m.visible)"
         :key="message.id"
         class="message-item"
         :class="[getOpacity(index)]"
+        :data-id="message.id"
       >
         <WelcomeMessage :message="message.name" />
       </div>
@@ -21,6 +23,12 @@
 import useAirtable from '~~/composables/useAirtable'
 import type { GuestData } from '~~/types'
 
+type Message = {
+  id: number
+  name: string
+  visible: boolean
+}
+
 interface Props {
   simulate: boolean
 }
@@ -28,7 +36,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const { downloadGuestlist } = useAirtable()
-const messages = ref<{ id: number; name: string }[]>([])
+const messages = ref<Message[]>([])
 const maxMessages = ref(5)
 const messageQueue = ref<string[]>([])
 let processingQueue = false
@@ -99,23 +107,32 @@ function getOpacity(index: number) {
 
 function receiveMessage(name: string, lifetime = 10000) {
   const messageId = Date.now() + Math.random()
-  messages.value.unshift({
+  const message = {
     id: messageId,
     name: name,
-  })
+    visible: true,
+  }
+  messages.value.unshift(message)
 
   setTimeout(() => {
-    const index = messages.value.findIndex((m) => m.id === messageId)
-    if (index !== -1) {
-      messages.value.splice(index, 1)
-    }
+    const msg = messages.value.find((m) => m.id === messageId)
+    if (msg) msg.visible = false
   }, lifetime)
 
   // If messages exceed maxMessages, remove the last message with a slight delay to allow the transition
   if (messages.value.length > maxMessages.value) {
     setTimeout(() => {
-      messages.value.pop()
+      const lastMsg = messages.value[messages.value.length - 1]
+      if (lastMsg) lastMsg.visible = false
     }, 500)
+  }
+}
+
+function removeMessage(el: Element) {
+  const messageId = parseFloat(el.getAttribute('data-id') || '')
+  const index = messages.value.findIndex((m) => m.id === messageId)
+  if (index !== -1) {
+    messages.value.splice(index, 1)
   }
 }
 
@@ -194,17 +211,16 @@ onBeforeUnmount(() => {
 
 .message-enter-to {
   opacity: 1;
-  transform: translateY(0);
   transform: translateX(0);
 }
 
 .message-leave-from {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(0);
 }
 
 .message-leave-to {
   opacity: 0;
-  transform: translateY(-20);
+  transform: translateY(5px);
 }
 </style>
