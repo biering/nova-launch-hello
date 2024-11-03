@@ -105,7 +105,7 @@ function getOpacity(index: number) {
   }
 }
 
-function receiveMessage(name: string, lifetime = 10000) {
+function receiveMessage(name: string, lifetime = 20000) {
   const messageId = Date.now() + Math.random()
   const message = {
     id: messageId,
@@ -192,12 +192,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* Tailwind CSS styles */
 .message-container {
   @apply flex flex-col;
 }
 
-/* Transition styles using Tailwind */
 .message-enter-active,
 .message-leave-active,
 .message-move {
