@@ -36,5 +36,53 @@ export default function useAirtable() {
     return guests
   }
 
-  return { downloadGuestlist }
+  async function updateGuestRFID(
+    firstname: string,
+    lastname: string,
+    RFID: string,
+  ) {
+    try {
+      // Escape single quotes in names to prevent errors in the formula
+      function escapeAirtableFormulaValue(value: string): string {
+        return value.replace(/'/g, "\\'")
+      }
+
+      const firstName = escapeAirtableFormulaValue(firstname)
+      const lastName = escapeAirtableFormulaValue(lastname)
+
+      // Build the filter formula to match both first name and last name
+      const filterFormula = `AND(
+        LOWER({First Name}) = LOWER('${firstName}'),
+        LOWER({Last Name}) = LOWER('${lastName}')
+      )`
+
+      // Find the record(s) matching the first name and last name
+      let records = await base(tableName)
+        .select({
+          filterByFormula: filterFormula,
+        })
+        .all()
+
+      if (records.length === 0) {
+        console.error(`Guest with name ${firstname} ${lastname} not found.`)
+        return
+      } else if (records.length > 1) {
+        console.warn(
+          `Multiple guests found with name ${firstname} ${lastname}. Updating the first one found.`,
+        )
+      }
+
+      let record = records[0]
+      await base(tableName).update(record.id, {
+        RFID,
+      })
+
+      console.log(`Guest ${firstname} ${lastname} updated`)
+    } catch (error) {
+      console.error('Error updating guest RFID:', error)
+      throw error
+    }
+  }
+
+  return { downloadGuestlist, updateGuestRFID }
 }
