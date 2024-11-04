@@ -187,7 +187,7 @@ function simulateMessages() {
 
 onMounted(async () => {
   if (!props.simulate) {
-    websocket = new WebSocket('ws://172.31.10.215:8765')
+    websocket = new WebSocket('ws://localhost:8765')
     websocket.onmessage = (event) => {
       console.log(event)
       const id = event.data.trim()
