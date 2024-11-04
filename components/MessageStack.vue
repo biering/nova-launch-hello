@@ -125,7 +125,7 @@ function getOpacity(index: number) {
   }
 }
 
-function receiveMessage(name: string, lifetime = 20000) {
+function receiveMessage(name: string, lifetime = 60000) {
   const messageId = Date.now() + Math.random()
   const message = {
     id: messageId,
