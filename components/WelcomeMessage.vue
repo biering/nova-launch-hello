@@ -1,5 +1,5 @@
 <template>
-  <div class="text-5xl font-light tracking-wide text-[#8E56FC]">
+  <div class="font-light tracking-wide text-[#8E56FC]">
     {{ message }}
   </div>
 </template>

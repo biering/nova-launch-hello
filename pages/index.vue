@@ -1,15 +1,17 @@
 <template>
-  <div class="mx-auto max-w-screen-md space-y-6 py-20 text-white">
-    <div class="text-6xl font-bold text-white tracking-wide">{{ heading }}</div>
-    <div class="h-[500px] py-6">
+  <div class="mx-auto max-w-screen-md space-y-6 py-20 text-white text-9xl flex flex-col h-screen">
+    <div class="font-bold text-white tracking-wide flex-none">{{ heading }}</div>
+    <div class="grow py-6">
       <MessageStack :simulate="simulate" class="h-full" />
     </div>
-    <div class="w-64 text-xl font-light tracking-wide text-gray-400">
+    <div class="w-72 text-4xl font-light tracking-wide text-gray-400 flex-none">
       {{ description }}
     </div>
-    <UBadge v-if="simulate" class="text-xs tracking-wide" color="red">
-      Simulated
-    </UBadge>
+    <div class="flex">
+      <UBadge v-if="simulate" class="text-xs tracking-wide" color="red">
+        Simulated
+      </UBadge>
+    </div>
   </div>
 </template>
 
