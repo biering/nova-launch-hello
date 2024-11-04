@@ -37,7 +37,7 @@ const props = defineProps<Props>()
 
 const { downloadGuestlist } = useAirtable()
 const messages = ref<Message[]>([])
-const maxMessages = ref(5)
+const maxMessages = ref(7)
 const messageQueue = ref<string[]>([])
 let processingQueue = false
 const mockGuests = ref<string[]>([
@@ -113,8 +113,12 @@ function getOpacity(index: number) {
     case 2:
       return 'opacity-100'
     case 3:
-      return 'opacity-80'
+      return 'opacity-90'
     case 4:
+      return 'opacity-80'
+    case 5:
+      return 'opacity-70'
+    case 5:
       return 'opacity-60'
     default:
       return 'opacity-40'
