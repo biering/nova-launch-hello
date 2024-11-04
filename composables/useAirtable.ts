@@ -6,7 +6,7 @@ export default function useAirtable() {
   const apiKey =
     'patYINjjyje7bmFeN.69963b1980d0f7e130990faf1ed846b00bc4106dd846870c3d5fb0e13d789d60'
   const baseId = 'appZyZ17IBOfKorr0'
-  const tableName = 'Guestlist'
+  const tableName = 'Guestlist Final'
   const base = new Airtable({ apiKey }).base(baseId)
 
   async function downloadGuestlist() {
@@ -20,8 +20,8 @@ export default function useAirtable() {
 
     records.forEach((record) =>
       guests.push({
-        firstname: record.get('First Name') as string,
-        lastname: record.get('Last Name') as string,
+        firstname: record.get('First name') as string,
+        lastname: record.get('Last name') as string,
         RFID: record.get('RFID') as string,
         company: record.get('Company') as string,
         used: (record.get('used') as boolean) ?? false,
@@ -52,8 +52,8 @@ export default function useAirtable() {
 
       // Build the filter formula to match both first name and last name
       const filterFormula = `AND(
-        LOWER({First Name}) = LOWER('${firstName}'),
-        LOWER({Last Name}) = LOWER('${lastName}')
+        LOWER({First name}) = LOWER('${firstName}'),
+        LOWER({Last name}) = LOWER('${lastName}')
       )`
 
       // Find the record(s) matching the first name and last name
