@@ -1,10 +1,10 @@
 <template>
-  <div class="mx-auto max-w-screen-md space-y-6 py-20">
-    <div class="text-6xl font-bold tracking-wide">{{ heading }}</div>
+  <div class="mx-auto max-w-screen-md space-y-6 py-20 text-white">
+    <div class="text-6xl font-bold text-white tracking-wide">{{ heading }}</div>
     <div class="h-[500px] py-6">
       <MessageStack :simulate="simulate" class="h-full" />
     </div>
-    <div class="w-64 text-xl font-light tracking-wide text-gray-600">
+    <div class="w-64 text-xl font-light tracking-wide text-gray-400">
       {{ description }}
     </div>
     <UBadge v-if="simulate" class="text-xs tracking-wide" color="red">
