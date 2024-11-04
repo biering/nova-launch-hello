@@ -1,6 +1,6 @@
 <template>
   <div class="mx-auto max-w-screen-md space-y-6 py-20 text-white text-7xl flex flex-col h-screen">
-    <div class="font-bold text-white tracking-wide flex-none">{{ heading }}</div>
+    <div class="font-bold text-white tracking-wide flex-none text-8xl">{{ heading }}</div>
     <div class="grow py-6">
       <MessageStack :simulate="simulate" class="h-full" />
     </div>

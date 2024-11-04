@@ -54,6 +54,7 @@ async function onSubmit({ data }: FormSubmitEvent<Schema>) {
   try {
     pending.value = true
     await updateGuestRFID(data.firstname, data.lastname, data.rfid)
+    onReset()
   } catch (error) {
     console.error(error)
     throw error
