@@ -17,7 +17,7 @@
 
 <script lang="ts" setup>
 definePageMeta({
-  colorMode: 'light',
+  colorMode: 'dark',
 })
 
 const simulate = ref<boolean>(false)
