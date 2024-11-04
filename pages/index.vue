@@ -20,7 +20,7 @@ definePageMeta({
   colorMode: 'light',
 })
 
-const simulate = ref<boolean>(true)
+const simulate = ref<boolean>(false)
 const mode = ref<'welcome' | 'comingBack'>('welcome')
 
 const heading = computed(() => {
