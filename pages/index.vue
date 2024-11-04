@@ -1,10 +1,10 @@
 <template>
-  <div class="mx-auto max-w-screen-md space-y-6 py-20 text-white text-9xl flex flex-col h-screen">
+  <div class="mx-auto max-w-screen-md space-y-6 py-20 text-white text-7xl flex flex-col h-screen">
     <div class="font-bold text-white tracking-wide flex-none">{{ heading }}</div>
     <div class="grow py-6">
       <MessageStack :simulate="simulate" class="h-full" />
     </div>
-    <div class="w-72 text-4xl font-light tracking-wide text-gray-400 flex-none">
+    <div class="w-72 text-3xl font-light tracking-wide text-gray-400 flex-none">
       {{ description }}
     </div>
     <div class="flex">
@@ -21,7 +21,7 @@ definePageMeta({
 })
 
 const simulate = ref<boolean>(true)
-const mode = ref<'welcome' | 'comingBack'>('comingBack')
+const mode = ref<'welcome' | 'comingBack'>('welcome')
 
 const heading = computed(() => {
   return mode.value === 'welcome' ? 'Welcome' : 'Did you like it?'
